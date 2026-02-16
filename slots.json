@@ -1,0 +1,18 @@
+{
+  "10:00": {
+    "capacity": 3,
+    "booked": 0
+  },
+  "12:00": {
+    "capacity": 3,
+    "booked": 0
+  },
+  "14:00": {
+    "capacity": 3,
+    "booked": 0
+  },
+  "16:00": {
+    "capacity": 3,
+    "booked": 0
+  }
+}

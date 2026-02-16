@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fixed Slot Booking</title>
+</head>
+<body>
+
+<h2>Available Time Slots</h2>
+<ul id="slots"></ul>
+
+<script>
+async function loadSlots() {
+    const res = await fetch('/slots');
+    const slots = await res.json();
+
+    const ul = document.getElementById('slots');
+    ul.innerHTML = '';
+
+    for (let time in slots) {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <b>${time}</b>
+            (Available: ${slots[time].capacity - slots[time].booked})
+            <button onclick="book('${time}')">Book</button>
+            <button onclick="cancel('${time}')">Cancel</button>
+        `;
+        ul.appendChild(li);
+    }
+}
+
+async function book(time) {
+    await fetch('/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ time })
+    });
+    loadSlots();
+}
+
+async function cancel(time) {
+    await fetch('/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ time })
+    });
+    loadSlots();
+}
+
+loadSlots();
+</script>
+
+</body>
+</html>
