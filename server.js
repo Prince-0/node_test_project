@@ -32,6 +32,10 @@ app.post('/book', (req, res) => {
     const { time } = req.body;
     const data = readSlots();
 
+    if (!data[time]) {
+        return res.status(400).json({ message: "Invalid time slot" });
+    }
+
     if (data[time].booked < data[time].capacity) {
         data[time].booked++;
         writeSlots(data);

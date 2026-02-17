@@ -2,13 +2,34 @@
 <html>
 <head>
   <title>Fixed Slot Booking</title>
+  <style>
+    #popup {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 40%;
+      background: white;
+      padding: 20px;
+      border: 1px solid black;
+    }
+  </style>
 </head>
 <body>
 
 <h2>Available Time Slots</h2>
 <ul id="slots"></ul>
+<div id="popup">
+  <h3>Book Slot</h3>
+  <input type="text" id="name" placeholder="Your Name"><br><br>
+  <input type="email" id="email" placeholder="Your Email"><br><br>
+  <button onclick="submitBooking()">Submit</button>
+  <button onclick="closePopup()">Cancel</button>
+</div>
 
 <script>
+
+let selectedTime = null;
+
 async function loadSlots() {
     const res = await fetch('/slots');
     const slots = await res.json();
@@ -21,19 +42,37 @@ async function loadSlots() {
         li.innerHTML = `
             <b>${time}</b>
             (Available: ${slots[time].capacity - slots[time].booked})
-            <button onclick="book('${time}')">Book</button>
+            <button onclick="openPopup('${time}')">Book</button>
             <button onclick="cancel('${time}')">Cancel</button>
         `;
         ul.appendChild(li);
     }
 }
+function openPopup(time) {
+    selectedTime = time;
+    document.getElementById('popup').style.display = 'block';
+}
 
-async function book(time) {
+function closePopup() {
+    document.getElementById('popup').style.display = 'none';
+}
+
+async function submitBooking() {
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+
+    if (!name || !email) {
+        alert("Please fill all fields");
+        return;
+    }
+
     await fetch('/book', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ time })
+        body: JSON.stringify({ time: selectedTime, name, email })
     });
+
+    closePopup();
     loadSlots();
 }
 
