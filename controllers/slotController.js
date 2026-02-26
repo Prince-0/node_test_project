@@ -1,21 +1,6 @@
-const express = require('express');
-const fs = require('fs');
-const app = express();
+const { readSlots, writeSlots } = require('../utils/fileHandler');
 
-app.use(express.json());
-app.use(express.static('public'));
-
-const FILE = './slots.json';
-
-function readSlots() {
-    return JSON.parse(fs.readFileSync(FILE));
-}
-
-function writeSlots(data) {
-    fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
-}
-
-app.get('/slots', (req, res) => {
+exports.getAvailableSlots = (req, res) => {
     const data = readSlots();
     const available = {};
 
@@ -26,9 +11,9 @@ app.get('/slots', (req, res) => {
     }
 
     res.json(available);
-});
+};
 
-app.post('/book', (req, res) => {
+exports.bookSlot = (req, res) => {
     const { time } = req.body;
     const data = readSlots();
 
@@ -43,9 +28,9 @@ app.post('/book', (req, res) => {
     }
 
     res.json({ message: "Slot Full" });
-});
+};
 
-app.post('/cancel', (req, res) => {
+exports.cancelSlot = (req, res) => {
     const { time } = req.body;
     const data = readSlots();
 
@@ -56,6 +41,4 @@ app.post('/cancel', (req, res) => {
     }
 
     res.json({ message: "Nothing to cancel" });
-});
-
-app.listen(3000, () => console.log("Server running at http://localhost:3000"));
+};
